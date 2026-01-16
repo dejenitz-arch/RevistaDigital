@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revista Digital - Guía de Prácticas Ibero v3 - Libro Abierto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+            background: linear-gradient(135deg, #2c5282 0%, #1a3a5c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            height: 60px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .magazine-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .pages-wrapper {
+            display: flex;
+            perspective: 1000px;
+            min-height: 650px;
+            position: relative;
+        }
+
+        .page {
+            width: 50%;
+            padding: 40px 30px;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            background: #f8f9fa;
+            border-right: 2px solid #e0e0e0;
+            animation: fadeIn 0.8s;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        .page:nth-child(even) {
+            border-right: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page h1 {
+            color: #2c5282;
+            font-size: 26px;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 12px;
+        }
+
+        .page h2 {
+            color: #1a3a5c;
+            font-size: 20px;
+            margin-top: 18px;
+            margin-bottom: 12px;
+        }
+
+        .page h3 {
+            color: #2c5282;
+            font-size: 16px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .page p {
+            color: #333;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .page ul, .page ol {
+            margin-left: 18px;
+            margin-bottom: 12px;
+        }
+
+        .page li {
+            color: #333;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 6px;
+        }
+
+        .character-box {
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFF5E5 100%);
+            border-left: 5px solid #d4af37;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 18px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .character-emoji {
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        .character-text h4 {
+            color: #2c5282;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .character-text p {
+            margin: 0;
+            color: #333;
+        }
+
+        .highlight-box {
+            background: #e8f0fe;
+            border-left: 4px solid #2c5282;
+            padding: 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+
+        .highlight-box strong {
+            color: #d4af37;
+        }
+
+        .image-block {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .image-block img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .image-caption {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .map-placeholder {
+            background: linear-gradient(135deg, #d4af37 0%, #f5deb3 100%);
+            min-height: 160px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c5282;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 18px 0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        button {
+            background: #2c5282;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #1a3a5c;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .page-counter {
+            color: #666;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .page-counter span {
+            color: #d4af37;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .context-item {
+            background: white;
+            border: 2px solid #d4af37;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+
+        .step-box {
+            background: white;
+            border-left: 4px solid #d4af37;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .step-number {
+            background: #d4af37;
+            color: #2c5282;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        .table-simple {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 12px;
+        }
+
+        .table-simple th {
+            background: #2c5282;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table-simple td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .pages-wrapper {
+                flex-direction: column;
+            }
+
+            .page {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 25px 20px;
+                min-height: auto;
+                margin-bottom: 0 !important;     
+                display: none;   
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .page h1 {
+                font-size: 20px;
+            }
+
+            .controls {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .page:nth-child(even) {
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .page.active {
+                display: flex !important;          
+            }
+
+            /* En móvil, solo ajusta el borde de la página activa derecha */
+            .page.active:nth-child(even) {
+            border-bottom: none;
+            }
+
+            .pages-wrapper { flex-direction: column !important; height: auto !important; }
+            .page { width: 100% !important; min-height: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://vocologycenter.com/wp-content/uploads/2025/05/Sello-con-cobranding-V-original-900x604.png" alt="Logo Ibero">
+        <h1>📖 REVISTA DIGITAL</h1>
+        <p>Guía de Prácticas Profesionales - Corporación Universitaria Iberoamericana</p>
+    </div>
+
+    <div class="magazine-container">
+        <div class="pages-wrapper">
+            <!-- PÁGINA 1: PORTADA (con espacio para imagen de portada) -->
+            <div class="page active">
+                <div style="text-align: center; padding: 10px 0;">
+                    <h1 style="border: none; padding: 0; margin-bottom: 20px;">GUÍA DE PRÁCTICAS PROFESIONALES</h1>
+
+                    <div class="image-block">
+                        <img src="img/img portada.jpeg" alt="Portada prácticas Ibero">
+                        <div class="image-caption">Imagen de portada (campus, estudiantes o identidad Ibero)</div>
+                    </div>
+                    <h2>Bienvenida a tu Puerta de Entrada</h2>
+                    <p>Sabemos que el camino hacia tus prácticas está lleno de preguntas. <strong>¿Por dónde empiezo? ¿Qué requisitos debo cumplir? ¿Cómo me preparo?</strong></p>
+                    <p>Respira tranquilo/a, porque hemos creado esta guía pensando especialmente en ti. Aquí encontrarás respuestas claras, directas y en un formato visual y fácil de entender.</p>
+                    <p style="color: #d4af37; font-weight: bold; margin-top: 20px;">¡Empecemos juntos este emocionante paso! 🚀</p>
+                </div>
+            </div>
+
+            <!-- PÁGINA 2: BIENVENIDA - INDICE -->
+            <div class="page">
+                <h1>INDICE</h1>
+                <div class="character-box">
+                    <div class="character-emoji">👩‍🎓</div>
+                    <div class="character-text">
+                        <h4>¡Hola! Soy Sofía, tu asesora</h4>
+                        <p>Te acompañaré en este emocionante viaje de prácticas profesionales. ¡Aquí encontrarás todas las respuestas que necesitas!</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">3</span>
+                    Que es la practica profesional
+                </div>
+                <div class="step-box">
+                    <span class="step-number">4</span>
+                    Contextos de practica
+                </div>
+                <div class="step-box">
+                    <span class="step-number">5</span>
+                    Contexto educativo
+                </div>
+                <div class="step-box">
+                    <span class="step-number">6</span>
+                    Contexto social
+                </div>
+                <div class="step-box">
+                    <span class="step-number">7</span>
+                    Contexto organizacional
+                </div>
+                <div class="step-box">
+                    <span class="step-number">8</span>
+                    Contexto clinico
+                </div>
+            </div>
+
+            <!-- PÁGINA 3: QUÉ ES LA PRÁCTICA (espacio para imagen conceptual) -->
+            <div class="page">
+                <h1>¿Qué es la Práctica Profesional?</h1>
+                <p><strong>Es un requisito académico obligatorio</strong> para obtener tu título en la Ibero.</p>
+
+                <div class="image-block">
+                    <img src="https://tesisymasters.mx/wp-content/uploads/2022/10/imagenes-de-blog-1-3.jpg" alt="Estudiantes en práctica profesional">
+                    <div class="image-caption">Escena de práctica profesional o contexto laboral.</div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>✅ OBLIGATORIA:</strong> Necesaria para graduarte.
+                </div>
+
+                <h3>Objetivo Principal:</h3>
+                <p>Aplicar los conocimientos teóricos en un contexto real, desarrollando <strong>competencias profesionales</strong> para tu desempeño laboral.</p>
+
+                <h3>Regulada por:</h3>
+                <p>📋 Resolución No. 517 de 2020</p>
+            </div>
+
+            <!-- PÁGINA 4: CONTEXTOS -->
+            <div class="page">
+                <h1>Contextos de Práctica</h1>
+                <p>Puedes realizar tu práctica en 4 contextos diferentes:</p>
+
+                <div class="context-grid">
+                    <div class="context-item">📚 Educativo</div>
+                    <div class="context-item">👥 Social</div>
+                    <div class="context-item">🏢 Organizacional</div>
+                    <div class="context-item">🌍 Clinico</div>
+                </div>
+
+                <div class="image-block">
+                    <img src="https://www.unbosque.edu.co/sites/default/files/2025-10/tipos-de-psicologia-social.webp" alt="Diferentes contextos de práctica">
+                    <div class="image-caption">Ejemplo de escenario social.</div>
+                </div>
+
+                <h3>Campos aplicados:</h3>
+                <p>Las competencias del practicante en cualquiera de los campos de la psicología ofertados por el programa se enfocan en la <strong>evaluación, diagnóstico, 
+                    intervención, seguimiento a nivel individual, grupal o comunitario</strong> de aspectos psicológicos que impacten el bienestar y desarrollo de los individuos en los diferentes contextos en los que se desenvuelva.</p>
+            </div>
+
+            <!-- PÁGINA 5: CONTEXTO EDUCATIVO -->
+             <div class="page">
+                <h1>CONTEXTO EDUCATIVO</h1>
+                <P>“Estudia los procesos de cambio en el aprendizaje en escenarios educativos, de carácter formal,
+                    informal y de educación para el desarrollo humano y el trabajo; teniendo presente la
+                    interacción permanente entre los saberes de la psicología y los saberes de la educación”.(COLPSIC)</P>
+                <div class="image-block">
+                    <img src="https://worldcampus.saintleo.edu/img/article/psicologia-educativa-caracteristicas-y-funciones.webp" alt="contexto_edu">
+                    <div class="image-caption">Ejemplo escenario contexto educativo.</div>
+                </div>
+             </div>
+            <!-- PÁGINA 6: CONTEXTO SOCIAL -->
+             <div class="page">
+                <h1>CONTEXTO SOCIAL</h1>
+                <p>“Relación del individuo con la sociedad. Estudia científicamente aspectos como la autoridad, la conformidad, la influencia social, la presión
+                    grupal; demandas sociales, las problemáticas; busca no sólo analizarlas, sino también comprenderlas e intervenirlas.” (COLPSIC)</p>
+                    <div class="image-block">
+                        <img src="https://pscastelar.com.ar/wp-content/uploads/2022/09/psicologia-social.jpg" alt="">
+                        <div class="image-caption">Ejemplo escenario contexto social.</div>
+                    </div>
+                </div>
+            <!-- PÁGINA 7: CONTEXTO ORGANIZACIONAL -->
+            <div class="page">
+                <h1>CONTEXTO ORGANIZACIONAL</h1>
+                <p>“Estudio de la interrelación dinámica entre empleador-empleado y entre individuos y
+                    colectivos, aborda el comportamiento humano individual, grupal y de los procesos organizacionales y del trabajo.” (COLPSIC)</p>
+                    <div class="image-block">
+                        <img src="https://psicologoenbogota.com/wp-content/uploads/2024/07/que-necesidades-atiende-un-psicologo-organizacional-main.jpg" alt="">
+                        <div class="image-caption">Ejemplo escenario contexto organizacional.</div>
+                    </div>
+                </div>
+             <!-- PÁGINA 8: CONTEXTO CLINICO -->
+            <div class="page">
+                <h1>CONTEXTO CLINICO</h1>
+                <p>“Aplica el conocimiento y las habilidades, las técnicas y los instrumentos proporcionados por
+                    la Psicología y ciencias afines a las anomalías, los trastornos y a cualquier otro comportamiento humano relevante para el
+                    bienestar individual principalmente.”</p>
+                <div class="image-block">
+                    <img src="https://www.utmachala.edu.ec/portalwp/wp-content/uploads/8-29.jpg" alt="">
+                    <div class="image-caption">Ejemplo escenario contexto clinico.</div>
+                </div>
+             </div>
+
+            <!-- PÁGINA 9: REQUISITOS Y PRERREQUISITOS -->
+            <div class="page">
+                <h1>✅ Requisitos Fundamentales</h1>
+
+                <h3>Antes de inscribirte debes:</h3>
+                <div class="step-box">
+                    <span class="step-number">1</span>
+                    Estar inscrito/a entre 9º y 10º semestre
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">2</span>
+                    Tener 30 horas disponibles a la semana
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">3</span>
+                    Afiliación a un sistema de seguridad social
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">4</span>
+                    Disponibilidad de computador e internet
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">5</span>
+                    Haber cursado los prerequisitos de tu semestre
+                </div>
+                <div class="image-block">
+                    <img src="https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/blade1-image?resMode=sharp2&op_usm=1.5,0.65,15,0&wid=608&hei=348&qlt=100&fit=constrain" alt="">
+                </div>
+            </div>
+
+            <!-- PÁGINA 10: CÓMO INSCRIBIRSE PASO A PASO -->
+            <div class="page">
+                <h1>📝 Cómo Inscribirse: Paso a Paso</h1>
+
+                <h3>PASO 1: Asistir a la Feria de Prácticas</h3>
+                <p>✅ <strong>OBLIGATORIO:</strong> Participa para conocer todas las opciones y fechas.</p>
+
+                <h3>PASO 2: Diligenciar el Formulario</h3>
+                <p>Completa el formulario de preinscripción con datos correctos. <strong>Solo tienes una oportunidad.</strong></p>
+
+                <h3>PASO 3: Seleccionar tu Contexto</h3>
+                <p>Elige dónde deseas hacer tu práctica (educativo, social, organizacional, clínico).</p>
+
+                <h3>PASO 4: Esperar Aprobación</h3>
+                <p>Recibirás una circular confirmando tu aprobación para realizar la práctica.</p>
+
+                <h3>PASO 5: Asistir a Procesos de Selección</h3>
+                <p><strong>IMPORTANTE:</strong> Debes asistir a todas las entrevistas de los escenarios. Si no asistes corres el riesgo de perder en cupo en el escenario.</p>
+            </div>
+
+            <!-- PÁGINA 11: EL FORMULARIO -->
+            <div class="page">
+                <h1>📋 El Formulario: Lo que Debes Saber</h1>
+
+                <div class="highlight-box">
+                    <strong>⚠️ IMPORTANTE:</strong> El formulario solo se completa una vez. Verifica bien tus datos accediendo a tu historial academico
+                    haciendo click <a href="https://moocs.ibero.edu.co/hermes/front/public/index.php/historialestudiante">AQUI</a>
+                </div>
+
+                <h3>Campos que completas:</h3>
+                <ul>
+                    <li><strong>Datos personales:</strong> Nombre, documento, email, teléfono</li>
+                    <li><strong>Información académica:</strong> Programa, semestre</li>
+                    <li><strong>Contexto preferido:</strong> Educativo, Social, Organizacional, Clínico</li>
+                    <li><strong>Experiencia previa:</strong> Cuéntanos tu experiencia (opcional)</li>
+                    <li><strong>Ubicación:</strong> Dirección, ciudad, departamento</li>
+                </ul>
+
+                <h3>Recuerda los requisitos de la empresa:</h3>
+                <ul>
+                    <li>Debe estar <strong>legalmente constituida</strong> (RUT, Cámara de Comercio o certificaciónde representaciónlegal , cc representantelegal).</li>
+                    <li>Tener un <strong>Psicologo titulado</strong> que te oriente durante la practica</li>
+                    <li>Las <strong>Fechas del contrato</strong> y de la <strong>practica</strong> deben coindicir</li>
+                </ul>
+
+                <div class="highlight-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <strong>Si cometes errores y no coinciden con los registros de la universidad, tu gestión no será considerada.</strong>
+                </div>
+            </div>
+
+              <!-- PÁGINA 12: DURACIÓN Y PERIODOS -->
+            <div class="page">
+                <h1>⏱️ Duración y Periodos</h1>
+
+                <h3>Cada práctica dura:</h3>
+                <p style="font-size: 18px; color: #d4af37; font-weight: bold;">16 SEMANAS ACADÉMICAS, 30 HORAS SEMANALES</p>
+
+                <h3>Períodos anuales para iniciar:</h3>
+                <div class="context-grid">
+                    <div class="context-item">📅 Febrero (Período 11)</div>
+                    <div class="context-item">📅 Junio (Período 13)</div>
+                    <div class="context-item">📅 Octubre (Período 17)</div>
+                </div>
+
+                <h3>Créditos académicos:</h3>
+                <p>Práctica I y II: <strong>10 créditos cada una</strong></p>
+
+                <div class="highlight-box">
+                    Debes inscribirse 3 meses antes de comenzar.
+                </div>
+            </div>
+
+            <!-- PÁGINA 13: LOS ACTORES CLAVE -->
+            <div class="page">
+                <h1>👥 Actores Clave en tu Práctica</h1>
+
+                <h3>🎓 El Practicante (TÚ)</h3>
+                <p>Estudiante activo cursando 9º o 10º semestre con inscripción en Práctica Profesional I o II.</p>
+
+                <h3>📚 El Docente Asesor Ibero</h3>
+                <p>Designado por la universidad para apoyarte académicamente y en procedimientos.</p>
+
+                <h3>👔 El Jefe de Escenario</h3>
+                <p>Profesional de Psicología en tu lugar de práctica que te orienta diariamente.</p>
+
+                <h3>🏢 El Escenario de Práctica</h3>
+                <p>La entidad (pública o privada) donde realizas tu práctica. Ibero tiene convenio con ellas</p>
+
+                <h3>🎯 Coordinación de Prácticas</h3>
+                <p>Gestiona todo: logística, documentos, académico y disciplinario.</p>
+            </div>
+
+            <!-- PÁGINA 14: PRÁCTICAS CLÍNICAS -->
+            <div class="page">
+                <h1>🏥 Si Eliges Campo Clínico</h1>
+
+                <div class="highlight-box">
+                    <strong>⚠️ REQUISITOS ESPECIALES:</strong>
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">1</span>
+                    Aprobar el aula prepráctica
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">2</span>
+                    Presentar prueba de conocimientos del área clínica
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">3</span>
+                    <strong>Modalidad presencial en CESPI, Bogotá</strong> (única opción)
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">4</span>
+                    Completar esquema de vacunación
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">5</span>
+                    Usar uniforme institucional
+                </div>
+
+                <p style="margin-top: 20px; color: #d4af37;"><strong>Horarios disponibles:</strong> 7 AM - 10 PM de lunes a viernes, 7 AM - 7 PM sábados.</p>
+            </div>
+
+            <!-- PÁGINA 15: CARGA HORARIA Y DEDICACIÓN -->
+            <div class="page">
+                <h1>⏰ Carga Horaria: Distribución Semanal</h1>
+
+                <table class="table-simple">
+                    <tr>
+                        <th>Actividad</th>
+                        <th>Horas</th>
+                    </tr>
+                    <tr>
+                        <td>Trabajo en Escenario</td>
+                        <td>26 horas</td>
+                    </tr>
+                    <tr>
+                        <td>Supervisión/Asesoría</td>
+                        <td>2 horas</td>
+                    </tr>
+                    <tr>
+                        <td>Aula Virtual</td>
+                        <td>2 horas</td>
+                    </tr>
+                    <tr style="background: #e8f0fe;">
+                        <td><strong>TOTAL SEMANAL</strong></td>
+                        <td><strong>30 horas</strong></td>
+                    </tr>
+                </table>
+
+                <div class="highlight-box">
+                    <strong>Contratos de Aprendizaje:</strong> Requieren 47 horas a la semana
+                </div>
+
+                <h3>Modelo de Créditos: 3:0</h3>
+                <p>3 HTD (Trabajo Directo) por 0 TI (Trabajo Independiente)</p>
+            </div>
+
+            <!-- PÁGINA 16: CRONOGRAMA -->
+            <div class="page">
+                <h1>📅 Cronograma de Gestión</h1>
+
+                <h3>15 días antes de iniciar:</h3>
+                <p>✅ Afiliación a la ARL<br>
+                   ✅ Documentación de salud<br>
+                   ✅ Inscripción a póliza (si es clínico)</p>
+
+                <h3>8 días antes de iniciar:</h3>
+                <p>✅ Asignación de aulas virtuales</p>
+
+                <h3>Semana anterior al inicio:</h3>
+                <p>✅ Inducciones en el escenario de práctica</p>
+
+                <div class="highlight-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <strong>⚠️ Sin documentación completa, no se te asignará escenario de práctica.</strong>
+                </div>
+
+                <p style="margin-top: 20px; font-size: 13px; color: #666;">Si no cumples las fechas, deberás realizar la práctica en el siguiente período habilitado.</p>
+            </div>
+
+            <!-- PÁGINA 17: SANCIONES Y RESPONSABILIDADES -->
+            <div class="page">
+                <h1>⚖️ Responsabilidades y Sanciones</h1>
+
+                <h3>Debes cumplir con:</h3>
+                <ul>
+                    <li>✅ Asistir a TODAS las inducciones y reuniones programadas</li>
+                    <li>✅ Presentarte a procesos de selección sin faltar</li>
+                    <li>✅ Cumplir los horarios establecidos en el escenario</li>
+                    <li>✅ Mantener el comportamiento ético y disciplinario</li>
+                    <li>✅ Completar los 30 horas semanales requeridas</li>
+                </ul>
+
+                <h3 style="color: #d4af37;">Consecuencias de no cumplir:</h3>
+                <ul>
+                    <li>❌ SANCIÓN Si faltas a procesos de selección</li>
+                    <li>❌ Si rechazas 2 escenarios: Practicar en siguiente período (debes buscar el escenario  y de no conseguirlo deberas aplzar)</li>
+                    <li>❌ Si no cumples plazos acordados con la universidad, debes posponer la práctica</li>
+                    <li>❌ Las practicas ya inscritas no se pueden aplazar</li>
+                </ul>
+
+                <div class="highlight-box" style="background: #0e0c0c; border-left-color: #d4af37;">
+                    <strong>Las prácticas ya inscritas NO se pueden aplazar.</strong>
+                </div>
+            </div>
+
+            <!-- PÁGINA 18: TIPS FINALES -->
+            <div class="page">
+                <h1>🎯 Tips Finales de Sofía</h1>
+
+                <div class="character-box">
+                    <div class="character-emoji">👩‍🎓</div>
+                    <div class="character-text">
+                        <h4>Recuerda estos puntos clave:</h4>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">1</span>
+                    Asistencia = Éxito. Nunca faltes a reuniones o procesos.
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">2</span>
+                    Los datos correctos en el formulario son CRÍTICOS.
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">3</span>
+                    Disponibilidad de 30 horas semanales es OBLIGATORIA.
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">4</span>
+                    Revisa constantemente tu correo institucional.
+                </div>
+
+                <div class="step-box">
+                    <span class="step-number">5</span>
+                    Si tienes dudas, contacta a Coordinación de Prácticas.
+                </div>
+
+                <p style="margin-top: 25px; text-align: center; color: #d4af37; font-weight: bold; font-size: 16px;">¡ESTAMOS PARA APOYARTE! 💪</p>
+            </div>
+
+            <!-- PÁGINA 19: CONTACTO Y CIERRE -->
+            <div class="page">
+                <h1>📞 Contacto y Próximos Pasos</h1>
+
+                <div class="highlight-box" style="background: linear-gradient(135deg, #e8f0fe 0%, #fff3cd 100%);">
+                    <h3 style="margin-top: 0;">Corporación Universitaria Iberoamericana</h3>
+                    <p><strong>Coordin​ación de Prácticas Profesionales</strong></p>
+                    <p>Facultad de Ciencias Humanas y Sociales</p>
+                    <p style="margin-top: 15px; color: #2c5282;"><strong>Ubicación:</strong> Carrera 16 N° 79-34, Bogotá, Colombia</p>
+                    <p style="margin-top: 15px; color: #2c5282;"><strong>Docente lider clinica: </strong>jennifer.perez@docente.ibero.edu.co</p>
+                    <p style="margin-top: 15px; color: #2c5282;"><strong>Link sala financiera (Lunes a viernes 8am - 6pm): </strong><a href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjAxOGQyMmMtMjA5ZC00OTI0LTk4MDgtYTA5YTUzMzIwODA0%40thread.v2/0?context=%7b%22Tid%22%3a%22ba5b0a4d-6c68-4ac3-9d6e-c5b5a12a9d69%22%2c%22Oid%22%3a%22888e4b4c-ca38-408f-ae35-c86e0b6b4e60%22%7d">Click aqui</a></p>
+                </div>
+
+                <h3 style="margin-top: 30px;">Tu próximo paso:</h3>
+                <p>1️⃣ Revisa si cumples con todos los prerequisitos</p>
+                <p>2️⃣ Prepárate para la Feria de Prácticas</p>
+                <p>3️⃣ Diligencia el formulario con cuidado</p>
+                <p>4️⃣ ¡Inicia tu práctica con confianza!</p>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <p style="font-size: 18px; color: #d4af37; font-weight: bold;">¡ÉXITO EN TU CAMINO PROFESIONAL! 🚀</p>
+                </div>
+            </div>
+              <!-- PÁGINA 20: UBICACIÓN (mapa) -->
+            <div class="page">
+                <h1>📍 Ubicación: Corporación Universitaria Iberoamericana</h1>
+                <p><strong>Departamento:</strong> Bogotá D.C</p>
+                <p><strong>Municipio:</strong> Bogotá D.C</p>
+                <p><strong>País:</strong> Colombia</p>
+
+                <div class="map-placeholder">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4779.91254539145!2d-74.05717962715656!3d4.649530121794611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9a4172da2c39%3A0xf046703135402277!2sCorporaci%C3%B3n%20Universitaria%20Iberoamericana!5e0!3m2!1ses!2sco!4v1767892350457!5m2!1ses!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+
+            <!-- Puedes reutilizar el mismo patrón .image-block donde quieras colocar imágenes -->
+
+        <div class="controls">
+            <button id="prevBtn" onclick="changePage(-1)">← Anterior</button>
+            <span class="page-counter">Hoja <span id="currentPage">1</span> de <span id="totalPages"></span></span>
+            <button id="nextBtn" onclick="changePage(1)">Siguiente →</button>
+        </div>
+    </div>
+
+<script>
+const pages = document.querySelectorAll('.page');
+let totalPages = pages.length;  //total paginas
+let currentPageIdx = 0;  // Índice página actual 
+
+document.getElementById('totalPages').textContent = totalPages;
+
+function showPage(idx) {
+  pages.forEach(p => p.classList.remove('active'));
+  
+  // En móvil: 1 página por vez
+  if (window.innerWidth <= 768) {
+    if (pages[idx]) pages[idx].classList.add('active');
+  } 
+  // En PC: 2 páginas por hoja (ajustar idx a hoja)
+  else {
+    const left = Math.floor(idx / 2) * 2;
+    const right = left + 1;
+    if (pages[left]) pages[left].classList.add('active');
+    if (pages[right] && right < totalPages) pages[right].classList.add('active');
+  }
+  
+  currentPageIdx = idx;
+  document.getElementById('currentPage').textContent = idx + 1;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === totalPages - 1;
+}
+
+document.getElementById('prevBtn').onclick = () => showPage(currentPageIdx - 1);
+document.getElementById('nextBtn').onclick = () => showPage(currentPageIdx + 1);
+
+window.addEventListener('resize', () => showPage(currentPageIdx));
+showPage(0);  // Página 1 inicial
+</script>
+
+
+
+
+</body>
+</html>
